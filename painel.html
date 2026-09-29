@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>EggVault - Painel</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#0d0f14;
+color:white;
+padding:30px;
+}
+
+h1{
+margin-bottom:30px;
+}
+
+.amarelo{
+color:#ffd43b;
+}
+
+.resumo{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(190px,1fr));
+gap:15px;
+margin-bottom:30px;
+}
+
+.caixa{
+background:#171a21;
+border:1px solid #292d36;
+border-radius:14px;
+padding:22px;
+}
+
+.caixa p{
+color:#999;
+margin-bottom:10px;
+}
+
+.numero{
+font-size:27px;
+font-weight:bold;
+color:#ffd43b;
+}
+
+.novo{
+background:#ffd43b;
+color:#111;
+border:0;
+padding:12px 20px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+margin-bottom:25px;
+}
+
+.formulario{
+display:none;
+background:#171a21;
+padding:20px;
+border-radius:14px;
+margin-bottom:25px;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin:8px 0;
+background:#0d0f14;
+color:white;
+border:1px solid #333;
+border-radius:7px;
+}
+
+.salvar{
+background:#ffd43b;
+border:0;
+padding:11px 20px;
+border-radius:7px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.tabela{
+overflow-x:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:#171a21;
+}
+
+th,td{
+padding:15px;
+text-align:left;
+border-bottom:1px solid #292d36;
+}
+
+th{
+color:#ffd43b;
+}
+
+.excluir{
+background:#e74c3c;
+color:white;
+border:0;
+padding:7px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+@media(max-width:600px){
+
+body{
+padding:15px;
+}
+
+th,td{
+padding:10px;
+font-size:12px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>
+📊 Painel <span class="amarelo">EggVault</span>
+</h1>
+
+
+<section class="resumo">
+
+<div class="caixa">
+
+<p>💰 Total vendido</p>
+
+<div class="numero"
+id="total">
+
+R$ 0,00
+
+</div>
+
+</div>
+
+
+<div class="caixa">
+
+<p>📦 Pedidos</p>
+
+<div class="numero"
+id="pedidos">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="caixa">
+
+<p>🟡 Pendentes</p>
+
+<div class="numero"
+id="pendentes">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="caixa">
+
+<p>✅ Concluídos</p>
+
+<div class="numero"
+id="concluidos">
+
+0
+
+</div>
+
+</div>
+
+</section>
+
+
+<button
+class="novo"
+onclick="abrirFormulario()">
+
+➕ Nova venda
+
+</button>
+
+
+<div
+class="formulario"
+id="formulario">
+
+<h2>Nova venda</h2>
+
+<br>
+
+<input
+id="cliente"
+placeholder="Cliente / identificação">
+
+<input
+id="produto"
+placeholder="Produto ou serviço">
+
+<input
+id="valor"
+type="number"
+step="0.01"
+placeholder="Valor">
+
+<select id="status">
+
+<option>Pendente</option>
+
+<option>Pago</option>
+
+<option>Entregue</option>
+
+<option>Concluído</option>
+
+<option>Cancelado</option>
+
+</select>
+
+<br><br>
+
+<button
+class="salvar"
+onclick="salvarVenda()">
+
+Salvar venda
+
+</button>
+
+</div>
+
+
+<h2>📋 Histórico</h2>
+
+<br>
+
+<div class="tabela">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Cliente</th>
+
+<th>Produto</th>
+
+<th>Valor</th>
+
+<th>Status</th>
+
+<th>Ação</th>
+
+</tr>
+
+</thead>
+
+<tbody id="lista">
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<script>
+
+let vendas=
+JSON.parse(
+localStorage.getItem("eggVaultVendas")
+)||[];
+
+
+function abrirFormulario(){
+
+const f=
+document.getElementById("formulario");
+
+f.style.display=
+f.style.display==="block"
+?"none"
+:"block";
+
+}
+
+
+function salvarVenda(){
+
+const cliente=
+document.getElementById("cliente").value.trim();
+
+const produto=
+document.getElementById("produto").value.trim();
+
+const valor=
+Number(document.getElementById("valor").value);
+
+const status=
+document.getElementById("status").value;
+
+
+if(!cliente||!produto||!valor){
+
+alert("Preencha todos os campos.");
+
+return;
+
+}
+
+
+vendas.push({
+
+id:Date.now(),
+
+cliente:cliente,
+
+produto:produto,
+
+valor:valor,
+
+status:status
+
+});
+
+
+salvar();
+
+document.getElementById("cliente").value="";
+document.getElementById("produto").value="";
+document.getElementById("valor").value="";
+
+document.getElementById("formulario")
+.style.display="none";
+
+}
+
+
+function excluirVenda(id){
+
+vendas=
+vendas.filter(
+venda=>venda.id!==id
+);
+
+salvar();
+
+}
+
+
+function salvar(){
+
+localStorage.setItem(
+"eggVaultVendas",
+JSON.stringify(vendas)
+);
+
+atualizar();
+
+}
+
+
+function atualizar(){
+
+const lista=
+document.getElementById("lista");
+
+lista.innerHTML="";
+
+let total=0;
+let pendentes=0;
+let concluidos=0;
+
+
+vendas.forEach(venda=>{
+
+if(venda.status!=="Cancelado"){
+total+=venda.valor;
+}
+
+if(venda.status==="Pendente"){
+pendentes++;
+}
+
+if(venda.status==="Concluído"){
+concluidos++;
+}
+
+
+const linha=
+document.createElement("tr");
+
+
+linha.innerHTML=`
+
+<td>#${venda.id}</td>
+
+<td>${venda.cliente}</td>
+
+<td>${venda.produto}</td>
+
+<td>
+R$ ${venda.valor
+.toFixed(2)
+.replace(".",",")}
+</td>
+
+<td>${venda.status}</td>
+
+<td>
+
+<button
+class="excluir"
+onclick="excluirVenda(${venda.id})">
+
+Excluir
+
+</button>
+
+</td>
+
+`;
+
+
+lista.appendChild(linha);
+
+});
+
+
+document.getElementById("total")
+.textContent=
+"R$ "+total
+.toFixed(2)
+.replace(".",",");
+
+
+document.getElementById("pedidos")
+.textContent=
+vendas.length;
+
+
+document.getElementById("pendentes")
+.textContent=
+pendentes;
+
+
+document.getElementById("concluidos")
+.textContent=
+concluidos;
+
+}
+
+
+atualizar();
+
+</script>
+
+</body>
+</html>

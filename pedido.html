@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EggVault - Pedido</title>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#0d0f14;
+color:white;
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.box{
+width:100%;
+max-width:500px;
+background:#171a21;
+border:1px solid #292d36;
+border-radius:18px;
+padding:30px;
+}
+
+.logo{
+font-size:25px;
+font-weight:bold;
+color:#ffd43b;
+margin-bottom:25px;
+}
+
+h1{
+margin-bottom:10px;
+}
+
+.descricao{
+color:#999;
+margin-bottom:25px;
+}
+
+label{
+display:block;
+margin:15px 0 7px;
+}
+
+input,select{
+width:100%;
+padding:13px;
+background:#0d0f14;
+color:white;
+border:1px solid #333;
+border-radius:8px;
+}
+
+.preco{
+margin:25px 0;
+padding:18px;
+background:#20232c;
+border-radius:10px;
+color:#ffd43b;
+font-size:25px;
+font-weight:bold;
+}
+
+button{
+width:100%;
+padding:14px;
+border:0;
+border-radius:9px;
+background:#ffd43b;
+color:#111;
+font-weight:bold;
+cursor:pointer;
+}
+
+.voltar{
+display:block;
+text-align:center;
+margin-top:20px;
+color:#999;
+text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<div class="logo">
+🥚 EggVault
+</div>
+
+<h1>📦 Fazer pedido</h1>
+
+<p class="descricao">
+Preencha os dados para solicitar um produto ou serviço.
+</p>
+
+<label>Identificação do pedido</label>
+
+<input
+id="cliente"
+type="text"
+placeholder="Ex: Cliente 001">
+
+<label>Produto ou serviço</label>
+
+<select id="produto">
+
+<option value="Serviço Starter" data-preco="5">
+Serviço Starter — R$ 5,00
+</option>
+
+<option value="Serviço Pro" data-preco="15">
+Serviço Pro — R$ 15,00
+</option>
+
+<option value="Serviço Especial" data-preco="25">
+Serviço Especial — R$ 25,00
+</option>
+
+</select>
+
+<div class="preco" id="preco">
+R$ 5,00
+</div>
+
+<button onclick="fazerPedido()">
+🛒 Solicitar pedido
+</button>
+
+<a class="voltar" href="index.html">
+← Voltar para a loja
+</a>
+
+</div>
+
+<script>
+
+const produto=document.getElementById("produto");
+const preco=document.getElementById("preco");
+
+produto.addEventListener("change",function(){
+
+const opcao=produto.options[produto.selectedIndex];
+
+const valor=Number(opcao.dataset.preco);
+
+preco.textContent=
+"R$ "+valor.toFixed(2).replace(".",",");
+
+});
+
+
+function fazerPedido(){
+
+const cliente=
+document.getElementById("cliente").value.trim();
+
+const opcao=
+produto.options[produto.selectedIndex];
+
+const nomeProduto=opcao.value;
+
+const valor=Number(opcao.dataset.preco);
+
+if(!cliente){
+
+alert("Digite uma identificação para o pedido.");
+
+return;
+}
+
+const vendas=
+JSON.parse(
+localStorage.getItem("eggVaultVendas")
+)||[];
+
+vendas.push({
+
+id:Date.now(),
+
+cliente:cliente,
+
+produto:nomeProduto,
+
+valor:valor,
+
+status:"Pendente"
+
+});
+
+localStorage.setItem(
+"eggVaultVendas",
+JSON.stringify(vendas)
+);
+
+alert("Pedido criado com sucesso! 📦");
+
+window.location.href="index.html";
+
+}
+
+</script>
+
+</body>
+</html>
